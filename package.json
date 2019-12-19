@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/JonathanSMachado/Curso-Bot/issues"
   },
-  "homepage": "https://github.com/JonathanSMachado/Curso-Bot#readme"
+  "homepage": "https://github.com/JonathanSMachado/Curso-Bot#readme",
+  "dependencies": {
+    "telegraf": "^3.34.1"
+  }
 }
