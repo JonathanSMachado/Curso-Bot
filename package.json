@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/JonathanSMachado/Curso-Bot#readme",
   "dependencies": {
+    "axios": "^0.19.0",
+    "moment": "^2.24.0",
     "telegraf": "^3.34.1"
   }
 }
