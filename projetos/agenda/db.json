@@ -1,0 +1,32 @@
+{
+  "tarefas": [
+    {
+      "id": 1,
+      "descricao": "Primeira tarefa",
+      "dt_prevista": "2020-01-12",
+      "dt_conclusao": "2020-01-12",
+      "observacao": "observacao sobre a primeira tarefa"
+    },
+    {
+      "id": 2,
+      "descricao": "Segunda tarefa",
+      "dt_prevista": "2020-01-14",
+      "dt_conclusao": null,
+      "observacao": "observacao sobre a segunda tarefa"
+    },
+    {
+      "id": 3,
+      "descricao": "Amanhã",
+      "dt_prevista": "2020-01-13",
+      "dt_conclusao": null,
+      "observacao": "observacao sobre tarefa de amanha"
+    },
+    {
+      "descricao": "Tarefa nao agendada",
+      "dt_prevista": null,
+      "dt_conclusao": null,
+      "observacao": null,
+      "id": 4
+    }
+  ]
+}
