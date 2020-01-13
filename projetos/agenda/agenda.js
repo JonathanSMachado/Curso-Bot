@@ -99,6 +99,95 @@ bot.action(/delete (.+)/, async ctx => {
     await ctx.editMessageText('Tarefa Excluída')
 })
 
+const dateKeyboardShortcut = Markup.keyboard([
+    ['Hoje', 'Amanhã'],
+    ['1 Semana', '1 Mês']
+]).resize().oneTime().extra()
+
+let taskId = null
+
+/*--------- Date Scene ----------*/
+const dateScene = new Scene('date')
+
+dateScene.enter(ctx => {
+    taskId = ctx.match[1]
+    ctx.reply('Gostaria de definir alguma data?', dateKeyboardShortcut)
+})
+
+dateScene.leave(ctx => taskId = null)
+
+dateScene.hears(/hoje/gi, async ctx => {
+    const date = moment()
+    handleDate(ctx, date)
+})
+
+dateScene.hears(/(Amanh[ãa])/gi, async ctx => {
+    const date = moment().add({ days: 1 })
+    handleDate(ctx, date)
+})
+
+dateScene.hears(/ˆ(\d+) dias?/gi, async ctx => {
+    const date = moment().add({ days: ctx.match[1] })
+    handleDate(ctx, date)
+})
+
+dateScene.hears(/ˆ(\d+) semanas?/gi, async ctx => {
+    const date = moment().add({ week: ctx.match[1]})
+    handleDate(ctx, date)
+})
+
+dateScene.hears(/ˆ(\d+) m[êe]s(es)?/gi, async ctx => {
+    const date = moment().add({ months: ctx.match[1]})
+    handleDate(ctx, date)
+})
+
+dateScene.hears(/(\d{2}\/\d{2}\/\d{4})/g, async ctx => {
+    const date = moment(ctx.match[1], 'DD/MM/YYYY')
+    handleDate(ctx, date)
+})
+
+const handleDate = async (ctx, date) => {
+    await updateTaskDate(taskId, date)
+    await ctx.reply('Data atualizada')
+    await showTask(ctx, taskId, true)
+    ctx.scene.leave()
+}
+
+dateScene.on('message', ctx => {
+    ctx.reply('Padrões aceitos\ndd/MM/YYYY\nX dias\nX semanas\nX meses')
+})
+
+/*------- Obs Scene -------*/
+
+const obsScene = new Scene('obs')
+
+obsScene.enter(ctx => {
+    taskId = ctx.match[1]
+    ctx.reply('Já pode adicionar suas anotações')
+})
+
+obsScene.leave(ctx => taskId = null)
+
+obsScene.on('text', async ctx => {
+    const task = await getTask(taskId)
+    const obs = task.observacao ? task.observacao + '\n---\n' + ctx.update.message.text : ctx.update.message.text
+    const res = await updateTaskObs(taskId, obs)
+    await ctx.reply('Observação adicionada')
+    await showTask(ctx, taskId, true)
+    ctx.scene.leave()
+})
+
+obsScene.on('message', ctx => {
+    ctx.reply('Apenas OBS em texto são aceitas')
+})
+
+const stage = new Stage([dateScene, obsScene])
+bot.use(session())
+bot.use(stage.middleware())
+
+bot.action(/setDate (.+)/, Stage.enter('date'))
+bot.action(/addNote (.+)/, Stage.enter('obs'))
+
 bot.on('text', async ctx => {
     try {
         const task = await insertTask(ctx.update.message.text)
